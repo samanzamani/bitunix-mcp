@@ -1,5 +1,7 @@
 # bitunix-mcp
 
+[![CI](https://github.com/samanzamani/bitunix-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/samanzamani/bitunix-mcp/actions/workflows/ci.yml)
+
 A **security-first [MCP](https://modelcontextprotocol.io) server** for the [Bitunix](https://www.bitunix.com) exchange, covering both **Spot** and **USDT-M Futures** APIs.
 
 Built for use with Claude Desktop, Claude Code, and any other MCP-compatible client.

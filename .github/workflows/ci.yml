@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Smoke test (server starts and lists tools)
+        run: |
+          node -e '
+          const { spawn } = require("child_process");
+          const srv = spawn("node", ["dist/index.js"], { stdio: ["pipe", "pipe", "inherit"] });
+          let buf = "";
+          const send = (o) => srv.stdin.write(JSON.stringify(o) + "\n");
+          srv.stdout.on("data", (d) => {
+            buf += d.toString();
+            let idx;
+            while ((idx = buf.indexOf("\n")) >= 0) {
+              const line = buf.slice(0, idx); buf = buf.slice(idx + 1);
+              if (!line.trim()) continue;
+              const msg = JSON.parse(line);
+              if (msg.id === 1) { send({jsonrpc:"2.0",method:"notifications/initialized"}); send({jsonrpc:"2.0",id:2,method:"tools/list"}); }
+              else if (msg.id === 2) {
+                const names = msg.result.tools.map(t => t.name);
+                if (names.length < 18) { console.error("too few tools:", names); process.exit(1); }
+                if (names.some(n => /place|cancel/.test(n))) { console.error("trading tools present without flag!"); process.exit(1); }
+                console.log("smoke OK:", names.length, "tools, no trading tools by default");
+                srv.kill(); process.exit(0);
+              }
+            }
+          });
+          send({jsonrpc:"2.0",id:1,method:"initialize",params:{protocolVersion:"2024-11-05",capabilities:{},clientInfo:{name:"ci",version:"0"}}});
+          setTimeout(() => { console.error("timeout"); process.exit(1); }, 15000);
+          '
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
