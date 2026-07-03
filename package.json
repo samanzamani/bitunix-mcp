@@ -1,0 +1,46 @@
+{
+  "name": "bitunix-mcp",
+  "version": "0.1.0",
+  "description": "Secure MCP server for the Bitunix exchange (Spot + Futures). Read-only by default; trading tools are opt-in. No withdrawal or transfer capability by design.",
+  "type": "module",
+  "bin": {
+    "bitunix-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "tsx --test src/**/*.test.ts",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bitunix",
+    "crypto",
+    "exchange",
+    "trading",
+    "futures",
+    "spot"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
