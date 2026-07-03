@@ -31,6 +31,8 @@ When creating your API key in the Bitunix dashboard:
 
 ## Installation
 
+No install needed — run directly from npm with `npx bitunix-mcp`, or build from source:
+
 ```bash
 npm install
 npm run build
@@ -52,8 +54,8 @@ Configure via environment variables (see [.env.example](.env.example)):
 {
   "mcpServers": {
     "bitunix": {
-      "command": "node",
-      "args": ["/path/to/bitunix-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "bitunix-mcp"],
       "env": {
         "BITUNIX_API_KEY": "your-api-key",
         "BITUNIX_SECRET_KEY": "your-secret-key"
@@ -68,7 +70,7 @@ Add `"BITUNIX_ENABLE_TRADING": "true"` only if you want the AI to be able to pla
 With Claude Code:
 
 ```bash
-claude mcp add bitunix -e BITUNIX_API_KEY=... -e BITUNIX_SECRET_KEY=... -- node /path/to/bitunix-mcp/dist/index.js
+claude mcp add bitunix -e BITUNIX_API_KEY=... -e BITUNIX_SECRET_KEY=... -- npx -y bitunix-mcp
 ```
 
 ## Tools
